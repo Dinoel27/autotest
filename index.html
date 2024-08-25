@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>3D Model Viewer</title>
+    <script src="./dist/mr.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+
+<mr-app>
+    <!-- Initialize mr-entity to host all 3D geometry on the web page -->
+    <mr-entity data-comp-anchor="type:fixed; label:table;" id="model-container" data-position="0 1.5 -0.75">
+        <!-- User interface panel with navigation buttons -->
+        <mr-panel class="bottom-panel">
+            <mr-button class="nav-button" data-position="0 0.1 0.25" onclick="showPreviousModel()">Previous</mr-button>
+            <mr-button class="nav-button" data-position="0 0.1 0.35" onclick="showNextModel()">Next</mr-button>
+        </mr-panel>
+
+        <!-- 3D Models initialized as mr-models with an associated mr-panel for information display -->
+        <mr-model src="./models/model1.glb" name="Model 1" id="model-1" visible="true">
+            <mr-panel class="info-panel" data-position="0 1 0" visible="false">
+                <mr-text id="info-model-1" class="model-info">Information about Model 1</mr-text>
+            </mr-panel>
+        </mr-model>
+
+        <mr-model src="./models/model2.glb" name="Model 2" id="model-2" visible="false">
+            <mr-panel class="info-panel" data-position="0 1 0" visible="false">
+                <mr-text id="info-model-2" class="model-info">Information about Model 2</mr-text>
+            </mr-panel>
+        </mr-model>
+
+        <mr-model src="./models/model3.glb" name="Model 3" id="model-3" visible="false">
+            <mr-panel class="info-panel" data-position="0 1 0" visible="false">
+                <mr-text id="info-model-3" class="model-info">Information about Model 3</mr-text>
+            </mr-panel>
+        </mr-model>
+        <!-- Add more models and panels as needed -->
+    </mr-entity>
+</mr-app>
+
+<script>
+    // JavaScript to handle model navigation and display
+
+    const models = document.querySelectorAll('mr-model');
+    let currentModelIndex = 0;
+
+    // Function to show the next model
+    function showNextModel() {
+        models[currentModelIndex].setAttribute('visible', 'false');
+        hideInfoPanel(models[currentModelIndex]);
+        currentModelIndex = (currentModelIndex + 1) % models.length;
+        models[currentModelIndex].setAttribute('visible', 'true');
+        updateModelInfo();
+    }
+
+    // Function to show the previous model
+    function showPreviousModel() {
+        models[currentModelIndex].setAttribute('visible', 'false');
+        hideInfoPanel(models[currentModelIndex]);
+        currentModelIndex = (currentModelIndex - 1 + models.length) % models.length;
+        models[currentModelIndex].setAttribute('visible', 'true');
+        updateModelInfo();
+    }
+
+    // Function to update the model information displayed in the UI panel
+    function updateModelInfo() {
+        const modelName = models[currentModelIndex].getAttribute('name');
+        document.getElementById('model-info').textContent = modelName;
+    }
+
+    // Function to show the info panel of a model
+    function showInfoPanel(model) {
+        const infoPanel = model.querySelector('.info-panel');
+        if (infoPanel) {
+            infoPanel.setAttribute('visible', 'true');
+        }
+    }
+
+    // Function to hide the info panel of a model
+    function hideInfoPanel(model) {
+        const infoPanel = model.querySelector('.info-panel');
+        if (infoPanel) {
+            infoPanel.setAttribute('visible', 'false');
+        }
+    }
+
+    // Event listeners for model interaction to display model info on click
+    models.forEach(model => {
+        model.addEventListener('click', () => {
+            hideInfoPanel(models[currentModelIndex]);  // Hide current info panel
+            showInfoPanel(model);  // Show clicked model's info panel
+        });
+    });
+
+    // Initialize the first model's info display
+    updateModelInfo();
+</script>
+</body>
+</html>
