@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>3D Model Viewer</title>
     <script src="./dist/mr.js"></script>
-    <script src="https://threejs.org/examples/jsm/loaders/DRACOLoader.js"></script>
+    <!-- Load THREE.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Load GLTFLoader and DRACOLoader from a compatible source -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 <body>
@@ -29,7 +33,15 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Initialize DRACOLoader and GLTFLoader
+        // Ensure user interaction before audio context is created
+        document.body.addEventListener('click', initializeAudioContext, { once: true });
+
+        function initializeAudioContext() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            audioContext.resume();
+        }
+
+        // Initialize DRACOLoader and GLTFLoader for Draco-compressed models
         const dracoLoader = new THREE.DRACOLoader();
         dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/');
         const gltfLoader = new THREE.GLTFLoader();
