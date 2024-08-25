@@ -4,9 +4,7 @@
     <meta charset="utf-8">
     <title>3D Model Viewer</title>
     <script src="./dist/mr.js"></script>
-    <!-- Load THREE.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Load GLTFLoader and DRACOLoader from a compatible source -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/DRACOLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
@@ -16,18 +14,10 @@
 <mr-app>
     <!-- Initialize mr-entity to host all 3D geometry on the web page -->
     <mr-entity data-comp-anchor="type:fixed; label:table;" id="model-container" data-position="0 1.5 -0.75">
-        <!-- 3D Models initialized as mr-models -->
-        <mr-model src="./models/model1.glb" name="Model 1" data-rotation="0 0 0" id="model-1" visible="true">
-            <mr-panel class="info-panel" data-position="0 1 0" visible="false">
-                <mr-text class="model-info">Information about Model 1</mr-text>
-            </mr-panel>
-        </mr-model>
-        <mr-model src="./models/model2.glb" name="Model 2" data-rotation="0 0 0" id="model-2" visible="false">
-            <mr-panel class="info-panel" data-position="0 1 0" visible="false">
-                <mr-text class="model-info">Information about Model 2</mr-text>
-            </mr-panel>
-        </mr-model>
-        <!-- Add more models and panels as needed -->
+        <!-- 3D Models instantiated as separate entities -->
+        <mr-model src="./models/model1.glb" name="Model 1" id="model-1" visible="true"></mr-model>
+        <mr-model src="./models/model2.glb" name="Model 2" id="model-2" visible="false"></mr-model>
+        <!-- Add more models as needed -->
     </mr-entity>
 </mr-app>
 
@@ -49,18 +39,37 @@
 
         const models = document.querySelectorAll('mr-model');
 
-        // Event listener for model click to display info panel
+        // Event listener for model click to display an info panel
         models.forEach(model => {
             model.addEventListener('click', () => {
-                toggleInfoPanel(model);
+                createInfoPanel(model);
             });
         });
 
-        // Function to toggle the visibility of the info panel
-        function toggleInfoPanel(model) {
-            const infoPanel = model.querySelector('.info-panel');
-            const isVisible = infoPanel.getAttribute('visible') === 'true';
-            infoPanel.setAttribute('visible', !isVisible);
+        // Function to create an info panel near the clicked model
+        function createInfoPanel(model) {
+            // Remove any existing info panels
+            removeExistingInfoPanels();
+
+            const infoPanel = document.createElement('mr-panel');
+            infoPanel.setAttribute('class', 'info-panel');
+            infoPanel.setAttribute('data-position', calculatePanelPosition(model));
+            infoPanel.innerHTML = `<mr-text class="model-info">Information about ${model.getAttribute('name')}</mr-text>`;
+
+            document.querySelector('mr-app').appendChild(infoPanel);
+        }
+
+        // Function to calculate the panel position based on the model position
+        function calculatePanelPosition(model) {
+            const position = model.getAttribute('data-position').split(' ').map(Number);
+            // Adjust the panel's position slightly above the model
+            return `${position[0]} ${position[1] + 0.2} ${position[2]}`;
+        }
+
+        // Function to remove any existing info panels
+        function removeExistingInfoPanels() {
+            const existingPanels = document.querySelectorAll('.info-panel');
+            existingPanels.forEach(panel => panel.remove());
         }
     });
 </script>
